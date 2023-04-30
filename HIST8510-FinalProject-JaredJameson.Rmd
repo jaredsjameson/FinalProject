@@ -20,13 +20,28 @@ Previously, critical methodologies have lacked certain tools that might facilita
 
 ### Building a Data Set / Corpus
 
-To start this analysis of *One-Way Street*, the first step was to create the dataset, or the corpus, to be analyzed. This entailed, for one, the transcribing of *One-Way Street* into plain text files, one text file for each individual passage in the book. This was accomplished by first acquiring a digital .PDF version of the text, in this case the Edmund Jephcott and Kingsley Shorter translation from their collection *One-Way Street and Other Writings*.^6^ Then Adobe Acrobat was used to run optical character recognition (OCR), which started the process by making the text selectable and thereby transferrable into a plain text editor, in this case Note ++ was used to create the .txt files to make up the corpus. After OCR was completed, the text for the PDF was transferred over to a single text file, where the text was reviewed for any errors in the OCR process, of which there were many. Once these errors were corrected and the text accurately reflected the source material, the individual passages were copied into new text files and each saved individually with nothing but the text of the file, meaning the title was not included as part of the passage itself (although titles were recorded in the metadata file. More on that later). These files were all saved into a directory titled "OWS-Benjamin." In total there were sixty-two files, including sixty individual passages; one file for the introductory epigraph that serves as the books dedication; and one file for the complete work, unseperated and titled. Once I had these files in a directory, I created a .zip file and uploaded that into a Github repository where it could be stored and later read into R Studio, the integrated development environment (IDE) for the R programming language, to create a more malleable dataframe. 
+To start this analysis of *One-Way Street*, the first step was to create the dataset, or the corpus, to be analyzed. This entailed, for one, the transcribing of *One-Way Street* into plain text files, one text file for each individual passage in the book. This was accomplished by first acquiring a digital .PDF version of the text, in this case the Edmund Jephcott and Kingsley Shorter translation from their collection *One-Way Street and Other Writings*.^6^ Then Adobe Acrobat was used to run optical character recognition (OCR), which started the process by making the text selectable and thereby transferrable into a plain text editor, in this case Note ++ was used to create the .txt files to make up the corpus. After OCR was completed, the text for the PDF was transferred over to a single text file, where the text was reviewed for any errors in the OCR process, of which there were many. Once these errors were corrected and the text accurately reflected the source material, the individual passages were copied into new text files and each saved individually with nothing but the text of the file, meaning the title was not included as part of the passage itself (although titles were recorded in the metadata file. More on that later). These files were saved in a directory titled "OWS-Benjamin." In total there were sixty-two files, including sixty individual passages; one file for the introductory epigraph that serves as the books dedication; and one file for the complete work, unseperated and titled. Once I had these files in a directory, I created a .zip file and uploaded that into a Github repository where it could be stored and later read into R Studio, the integrated development environment (IDE) for the R programming language, to create a more malleable dataframe. 
 
 
 With the .txt files created, it was time to create the metadata file. This file consist of an Excel spreadsheet converted into a .csv file that contained all the relevant metadata associated with each individual passage. This is where information about the title, the year written, or the structural type is listed as supplementary info to foster the interpretations produced later. This file will also store results from counts and other analytical techniques that will be the building blocks for this projects final conclusions. Again, like with the text files, the finished .csv file was uploaded into a Github directory where it could then be read into R Studio for analysis.
 
+### Pre-Processing the Corpus
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(readtext)
+library(widyr)
+library(SnowballC)
+
+download.file("https://github.com/jaredsjameson/onewaystreet-archive/blob/c3ac79dfd6d1e0d8d8839e07be0f0ceddb5e3b90/OWS-Benjamin.zip?raw=true", "OWS-Benjamin.zip")
+unzip("OWS-Benjamin.zip")
+```
+
+
+
 ###Techniques for Analysis: Topic Modelling
- 
+
 
 
 
