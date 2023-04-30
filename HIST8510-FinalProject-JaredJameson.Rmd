@@ -2,7 +2,9 @@
 title: "Benjamin From a Distance: Taking a Stroll Down *One-Way Street*"
 author: "Jared Jameson"
 date: "2023-04-29"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ## Introduction: Locating Benjamin
@@ -28,14 +30,38 @@ With the .txt files created, it was time to create the metadata file. This file 
 ### Pre-Processing the Corpus
 
 ```{r}
+#First, the necessary libraries need to be loaded: 
+
 library(tidyverse)
 library(tidytext)
 library(readtext)
 library(widyr)
 library(SnowballC)
 
-download.file("https://github.com/jaredsjameson/onewaystreet-archive/blob/c3ac79dfd6d1e0d8d8839e07be0f0ceddb5e3b90/OWS-Benjamin.zip?raw=true", "OWS-Benjamin.zip")
+#Next, the text files and metadata file need to be downloaded into the directory. The code used to do so is commented out below as it only needed to be run once:
+
+download.file("https://github.com/jaredsjameson/onewaystreet-archive/blob/4431b1538441327e1660bd7c700ddba366beefb9/OWS-Benjamin.zip?raw=true", "OWS-Benjamin.zip")
+
+#Another bit of code unzips the compressed text files:
+
 unzip("OWS-Benjamin.zip")
+
+
+
+OWS_Metadata <- read.csv("https://raw.githubusercontent.com/jaredsjameson/onewaystreet-archive/main/BenjaminW-OWS-metadata-Apr292023.csv")
+
+OWS_Metadata
+
+file_paths <- list.files("OWS-Benjamin/")
+OWS_texts <- readtext(paste("OWS-Benjamin/", file_paths, sep=""))
+
+OWS_Benjamin_full <- full_join(OWS_Metadata, OWS_texts, by = c("Filename" = "doc_id"))
+
+OWS_Benjamin_full
+
+
+
+
 ```
 
 
