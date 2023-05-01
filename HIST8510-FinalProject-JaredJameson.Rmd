@@ -199,7 +199,7 @@ OWS_Benjamin_full.length.agg.range.bgraph <- ggplot(data=OWS_Benjamin_full.lengt
 OWS_Benjamin_full.length.agg.range.bgraph +scale_fill_brewer(palette="Dark2")
 ```
 
-This graph demonstrates how clearly a sweet spot in terms of length in *One-Way Street* is between 50 and 300 words. In fact, that number accounts for exactly 75% of the total number of passages falling in that range. This suggests that a closer look into any of three main characteristic lengths, the uncharacteristically short less than 50 words group, the characteristic standard 51-300 words group, and the uncharacteristically long 301-2000 words group (the longest work is just over 2000 words). Isolating each of these groups for later comparative analysis may be useful later. 
+This graph identifies a clear sweet spot in terms of length in *One-Way Street* is between 50 and 300 words. In fact, that number accounts for exactly 75% of the total number of passages falling in that range. This suggests that a closer look into any of three main characteristic lengths, the uncharacteristically short less than 50 words group, the characteristic standard 51-300 words group, and the uncharacteristically long 301-2000 words group (the longest work is just over 2000 words). Isolating each of these groups for later comparative analysis may be useful later. 
 
 Delineating the text this way may also be a way to support some of the argument suggesting the the longest passage in *One-Way Street*, "Imperial Panorama," functions somehow as he core or heart of the text. The arguments for this largely rely on the fact that Imperial Panorama was one of few texts written earlier than the 1925-26 window that the rest of the text was written in. Mcfarland, for example says that Imperial Panorama was "the 'original' aphorism in the collection, KAISERPANORAMA," which he perceives the rest of the passages extending from as a sort of "encounter from various directions motifs of space, of dream, of gambling, of rupture and of loss. They demonstrate the earlier tendencies in Benjamin’s thought  that break into expression in the book." McFarland sees this as a model for "Benjamin’s further work, in particular the affinity between Asja Lacis Street and theParisian arcades Benjamin explored for the rest of his life."^7^ This analysis of *One-Way Street* then already finds connections to other theory's of Benjamin's work and shows promise for further development. Perhaps another visualization will strengthen this case.
 
@@ -235,11 +235,122 @@ This look at the structure of the text, after being visualized in this way, help
 
 #### Term Frequency
 
+With the above basic counting now complete, it is time to move on to more advanced techniques such as term frequency. 
+
+```{r}
+OWS_Benjamin_full.single.termfreq <- OWS_Benjamin_full.stop.single %>%
+  filter(Title != "Complete Cycle") %>%
+  group_by(Title, Format) %>%
+  count(Title, word, sort = T)  %>%# count occurrence of word and sort descending
+  group_by(Title) %>% 
+  mutate(n_tot = sum(n), # count total number of words per doc
+         term_freq = n/n_tot) %>%
+  arrange(desc(term_freq))
+
+OWS_Benjamin_full.single.termfreq
+```
+Peaking at the data, the term with the highest frequency is "wake," with a term frequency of 0.33. This is especially compelling considering that this term derives from the passage titled "Closed for Alterations," which is about a hotel room being "closed for alterations" after its tenant committed suicide by gunshot to the head.^9^ This particular passage has always been a memorable one for readers also because of Benjamin's own suicide. This early echo of the author's impending doom certainly has a weight to it already, so perhaps it should not be surprising that it's use of "wake" is the highest listed, although it is tied with three other terms: "conception," "conquer," and  "convince." These terms all share the 0.33 term frequency rating. All three terms are from the passage "For Men,"^10^ and they are all related in certain ways to the term "wake," at least from a standpoint of common association. For instance to wake is regain consciousness after sleep, to become aware again, and a conception not only marks the arriving at the formation of a concept, but also a birth, into the new day. The word *conquer* is commonly associated with waking in relation to phrases like "seize the day," "early bird catches the worm," "Up and at 'em," etc. And to *convince* is to *wake* someone up to a point-of-view or belief. Is this the type of "waking" that emanates from Benjamin's writing here? 
+
+Of course, the passages "Closed for Alterations" and "For Men" both are among the shortes in *One-Way Street*, and among the four total terms tied for term frequency, *wake* is the only one that actually appeared more than once its passage. That's right, the other three terms from "For Men" only show up once, but their frequency is incredibly high because there are only three other words in the passage after accounting for stop words. The entire passage, in fact, is only one sentence. This strengthens the case for *wakes* more legitimate frequency rating, but it also suggests that a better indication of term frequency might be gotten by (1) filtering out terms that only appear once in a text and (2) filtering out those texts that are incredibly short and thereby might be skewing frequency readings. Luckily, we can eliminate those texts based on the early analysis that broke those groups down. 
+
+For now, the data will be filtered for terms that occur at least twice.
+
+```{r}
+
+OWS_Benjamin_full.single.termfreq.filtered <- OWS_Benjamin_full.single.termfreq %>%
+  filter(n > 1)
+OWS_Benjamin_full.single.termfreq.filtered
+
+```
+
+
+Drilling down a bit further now, by the adjusted frequency ratings, the top term is still *wake*, but now the second highes term frequency is 0.25, deriving from the word *street*. Of course, it is not surprising at all that in a book titled *One-Way Street* that the term *street* would be one with a high frequency, but when paired with the frequency of the word *wake*, the combination offers fodder for interpretation. 
+
+The street is in fact a wake, in the sense that the street's progress forward in its construction cut into the earth and tore a wide swath through it for travelers to follow behind in, led by the roadways into the worlds of the men who build them. To be in the *wake* of the roadway is to be on the street, walking, lagging behind but pushing ahead as the present instant unfolds. Benjamin was well-known for his celebrating the Baudelairian figure of the flaneur, the aimless dandy wanderer who takes in the city for what it is only by walking through its streets. *Waking* life is to venture back out from slumber, the dream world, and back into the world again to carry on with life. This type of interpretation can add to our overall criticism of the shorter pieces that seem to enhance the affect on the reader of term frequency. 
+
+Still, though, it seems that the data needs to be refined further. After all, the earlier analysis of wordcount groupings resulted in the statement that over 75% of the passages in *One-Way Street* have wordcounts in between 50 and 300. Accomodating for this might help uncover more meaningful instances of term frequency in relation to our previously established word count range findings.
+
+
+```{r}
+OWS_Benjamin_full.single.termfreq.filtered.lengroup <- OWS_Benjamin_full.single.termfreq.filtered %>%
+  filter(n_tot > 30 & n_tot < 225)
+
+
+OWS_Benjamin_full.single.termfreq.filtered.lengroup
+
+```
+
+Both the top terms here derive from the same passage, interestingly, one titled "No. 13." Again, strangely enough, the terms *books* and *harlots* showing the highest term frequencies among passages in this wordcount range, is not surprising, as Benjamin's writing, including that of *One-Way Street*, often references his fondness for both collecting books and visiting prostitutes. From an interpretive point of view, the term *harlot*, though, in relation to the term *books* oddly clashes with the epigraph from the book's opening dedication to his romantic interest Asja Lacis. The question arises as to why mention *harlots* so frequently, so strongly here in a book supposedly inspired by her. It is also interesting that these high occurrence and high frequency terms show up here, in "No. 13," as the number 13 reverberates through many of the other pieces in *One-Way Street*, and Benjamin is known to have studied the cabala which has sacred numerological components to its teachings. 
+
+Another interesting outcome from the term frequency analysis is the third term on the list *dream*. Here, there could be connections drawn toward *wake* from the earlier, shallower term frequency analysis, which could create further support for an interpretation of the importance of dreams and the liminal ambiguities between sleeping and waking states that seem of central importance here. In this case, the term derives from the second passage in the book, "Breakfast Room."^11^ Benjamin's use of *dream* here at such a high frequency is effective, as it resonates throughout the reading from the very beginning, serving to almost prime reader's attunement to the dreamlike qualities spread throughout the work. 
+
+The terms found here in this term frequency analysis do add depth to interpretive efforts by both sparking the above developed ideas and serving as evidence later once a full interpretation has been crafted. This technique seems to be useful for pointing toward the themes of texts as assessed from different levels. The statements here are made rather hesitantly though, as a deeper understanding of term frequency relevance is needed to better understand the results and how much weight should be attributed to them. Term frequency as a tool for textual analysis also seems like it is most effective when used with other basic counts of term occurence.
+
+Lastly, drilling down further might help offer more interesting and useful results, and the format categories categories established earlier have yet to be considered in terms of term frequency. Since we now that the single paragraph is the most dominant format in *One-Way Street*, it makes sence to look at this area as well. The below code does just that:
+
+
+```{r}
+OWS_Benjamin_full.single.termfreq.filtered.parlengroup <- OWS_Benjamin_full.single.termfreq.filtered.lengroup %>%
+  filter(Format == "single paragraph") %>% 
+  arrange(desc(term_freq))
+
+OWS_Benjamin_full.single.termfreq.filtered.parlengroup
+
+```
+This dataframe shows which terms have the highest frequency for all passages in *One-Way Street* that are of the commonest length of more than 50 and less than 300 words and in the commonest format, the single paragraph. Here, *dream* takes the number one spot with the highest frequency of approximately 0.08. At this length, the intensisty of the frequencies are drastically lower than they were in the previous examples. This exemplifies the relationship of term frequency to the length of a passage quite nicely, where the shorter a passage is the more weightier each word in it becomes. This seems obvious but becomes interesting when critically examining Benjamin's aesthetic choices. In that case, the argument could be made that by choosing such a short medium in the single paragraph, Benjamin not only lends each of his words a more powerful, more resonant frequency, although only at a short burst. In addition to this, by sandwiching occasional longer passages between these sporadic bursts of paragraphs, Benjamin lends those longer passages a certain sense of gravitas, a seeming immensity, to these passages. These longer works are only "longer" in the context of the other writings in *One-Way Street*, outside of this text, these passages are relatively short themselves, with the absolute longest of them being, as earlier mentioned, only around 2,000 words. Compared to even a "short" novel, this is still pretty short, but in Benjamin's little book, these passages stand out like giants and demand attention more than they ortherwise would. 
+
+Outside of this formal analysis, though, this list does provide interesting insights, with the top five terms, *dream*, *secret*, *streetcar*, *children*, and *world*, all seeming to reflect key themes that recur throughout the bok. It will be interesting to look back at this in conjunction with the later topic modeling in this project. But before that, perhaps visualizing the difference in term frequency intensity in shorter works will help bring that point home:
+
+
+```{r}
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups1 <- data.frame(append(OWS_Benjamin_full.single.termfreq.filtered, c(StackedClass="All Formats"), after = 2))
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups1
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups2 <- data.frame(append(OWS_Benjamin_full.single.termfreq.filtered.parlengroup, c(StackedClass="single par."), after = 2))
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.whole <- rbind(OWS_Benjamin_full.single.termfreq.filtered.stackedgroups1, OWS_Benjamin_full.single.termfreq.filtered.stackedgroups2)
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready1 <- OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.whole %>%
+  filter(term_freq >= 0.081761006)
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready2 <-
+  OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.whole %>%
+  filter(StackedClass == "single par.")
+ 
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready3 <- 
+  OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready2 %>%
+   filter(term_freq <= 0.077669903 & term_freq >= 0.054545455)
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole <-  rbind(OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready1, OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready3)
+
+OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole
+
+OWS_Benjamin_full.single.termfreq.stackedbgraph <- 
+  ggplot(data = OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole, aes(x = StackedClass, y = term_freq, fill = word)) +
+  geom_bar(stat="identity") 
+  
+ 
+
+OWS_Benjamin_full.single.termfreq.stackedbgraph
+
+
+
+
+```
+This visualization highlights clearly the differing levels of frequency as works shorter than a paragraph are taken out of the data pool. This visualization shows how certain words resonate more strongly in the text, at least according to the current method of calculation. This can be enhanced.
+
+
+### TF-IDF 
+
+The term frequency above yielded some interesting results, but still, there is more in terms of frequency that we can learn about *One-Way Street*. To go further, the technique of Term Frequency - Inverse Document Frequency will be explored as a tool for analysis. Ph.D and author Faith Karabiber defines term frequency as "a widely used statistical method in natural language processing and information retrieval. It measures how important a term is within a document relative to a collection of documents (i.e., relative to a corpus)." ^12^
 
 
 
 
 ## End Notes
+
 
 1. McFarland, “Setting the Stage," 212.
 
@@ -255,7 +366,15 @@ This look at the structure of the text, after being visualized in this way, help
 
 7. McFarland, "Setting the Stage," 215-16.
 
-8. McFarland, "Setting the Stage," 212
+8. McFarland, "Setting the Stage," 212.
+
+9. Benjamin, *One-Way Street*, 91.
+
+10. Benjamin, *One-Way Street*, 47.
+
+11. Benjamin, *One-Way Street*, 45.
+
+12. Karabiber, "TF-IDF."
 
 
 
@@ -267,5 +386,7 @@ Benjamin, Walter. *One-Way Street*. *One-Way Street and Other Writings*, trans. 
 Benjamin, Walter. *The Origins of German Tragic Drama*. Verso, 1998.
 
 McFarland, James. “Setting the Stage: An Introduction to One-Way Street.” In The Germanic Review: Literature, Culture, Theory, 87, no. 3, (2012): 211-216. DOI: 10.1080/00168890.2012.707939.
+
+Karabiber, Faith. "TF-IDF — Term Frequency-Inverse Document Frequency." Learn Data Sci, https://www.learndatasci.com/
 
 Sontag, Susan. Introduction. In *One-Way Street and Other Writings*, trans. Edmund Jephcott and Kingsley Shorter. NLB, 1979.
