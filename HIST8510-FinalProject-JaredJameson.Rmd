@@ -203,11 +203,39 @@ This graph demonstrates how clearly a sweet spot in terms of length in *One-Way 
 
 Delineating the text this way may also be a way to support some of the argument suggesting the the longest passage in *One-Way Street*, "Imperial Panorama," functions somehow as he core or heart of the text. The arguments for this largely rely on the fact that Imperial Panorama was one of few texts written earlier than the 1925-26 window that the rest of the text was written in. Mcfarland, for example says that Imperial Panorama was "the 'original' aphorism in the collection, KAISERPANORAMA," which he perceives the rest of the passages extending from as a sort of "encounter from various directions motifs of space, of dream, of gambling, of rupture and of loss. They demonstrate the earlier tendencies in Benjamin’s thought  that break into expression in the book." McFarland sees this as a model for "Benjamin’s further work, in particular the affinity between Asja Lacis Street and theParisian arcades Benjamin explored for the rest of his life."^7^ This analysis of *One-Way Street* then already finds connections to other theory's of Benjamin's work and shows promise for further development. Perhaps another visualization will strengthen this case.
 
-In addition to length, the metadata also includes a column designating different formats that each passage models. There are 
+In addition to length, the metadata also includes a column designating different formats that each passage models. There are 14 individual formats that the passages in *One-Way Street* adhere to, and by taking a closer look at these and producing a visualization of how many passages exhibit each different format, further structural insights can be gained.
 
 ```{r}
+OWS_Metadata.formatadj <- read.csv("https://raw.githubusercontent.com/jaredsjameson/onewaystreet-archive/main/BenjaminW-OWS-typeadj-metadata-Apr292023.csv")
 
+OWS_Metadata.groupform <- OWS_Metadata.formatadj %>%
+  filter (Title != "Complete Cycle") %>%
+  group_by(Format) %>%
+    count(Format) %>%
+  arrange(n) 
+
+
+OWS_Metadata.groupform.bgraph <- 
+  ggplot(data = OWS_Metadata.groupform, aes(x = Format, y = n, fill = Format)) +
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE) +
+  geom_text(aes(label=n), vjust=0.4, hjust=1.5, color="black",
+            position = position_dodge(0.9), size=2.5) +
+  labs(y= "Number of Texts in Format", x = "Formats") +
+  coord_flip() +
+  theme(legend.position="bottom")
+
+OWS_Metadata.groupform.bgraph
+  
 ```
+
+
+The above bar graph highlights how key the single paragraph format is to *One-Way Street*, as it eclipses all other forms in comparison comprising a total of just under 50% of the work. Add to that fact the sum of the other two highest occuring formats, subtitled sections" and "unlabeled sections," which both had eight and nine occurences respectively, totaling 17, making up another roughly 29% of the text, So out of the original total of fourteen different formats, these three, "single paragraphs," "subtitled sections," and "unlabeled sections," dominate 79% of the book. 
+
+This look at the structure of the text, after being visualized in this way, helps shape a solid aesthetic interpretation of the text, but it also helps the observant analyst pinpoint what might be missing. Here, there is one other means of categorizing the texts structure that could add to the above 2 visualizations depiction of Benjamin's writing. That is, like McFarland points out, Benjamin's writing in *One-Way Street" often exhibits certain qualities like being dream-centered, satirical, or child-themed.^8^ And I would add further categories like romantic, political, architectural to name a few. This type of classification is beyond the scope of this project, but it is example of just the type of idea that might add dimension to an interpretation that might be lost without the aid of visualizing the other data and reflecting on the findings.
+
+#### Term Frequency
+
+
 
 
 
@@ -226,6 +254,8 @@ In addition to length, the metadata also includes a column designating different
 6. This version was first published in 1978 as the first English traslation of the full cycle of writing that made up the original German version, *Einbahnstraße*. Benjamin, Walter. *One-Way Street*.
 
 7. McFarland, "Setting the Stage," 215-16.
+
+8. McFarland, "Setting the Stage," 212
 
 
 
