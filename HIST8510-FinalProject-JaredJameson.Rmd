@@ -40,35 +40,174 @@ library(SnowballC)
 
 #Next, the text files and metadata file need to be downloaded into the directory. The code used to do so is commented out below as it only needed to be run once:
 
-download.file("https://github.com/jaredsjameson/onewaystreet-archive/blob/4431b1538441327e1660bd7c700ddba366beefb9/OWS-Benjamin.zip?raw=true", "OWS-Benjamin.zip")
+#download.file("https://github.com/jaredsjameson/onewaystreet-archive/blob/4431b1538441327e1660bd7c700ddba366beefb9/OWS-Benjamin.zip?raw=true", "OWS-Benjamin.zip")
 
 #Another bit of code unzips the compressed text files:
 
-unzip("OWS-Benjamin.zip")
-
-
+#unzip("OWS-Benjamin.zip")
 
 OWS_Metadata <- read.csv("https://raw.githubusercontent.com/jaredsjameson/onewaystreet-archive/main/BenjaminW-OWS-metadata-Apr292023.csv")
-
-OWS_Metadata
 
 file_paths <- list.files("OWS-Benjamin/")
 OWS_texts <- readtext(paste("OWS-Benjamin/", file_paths, sep=""))
 
 OWS_Benjamin_full <- full_join(OWS_Metadata, OWS_texts, by = c("Filename" = "doc_id"))
 
-OWS_Benjamin_full
+```
+----------------------------------------------------
 
 
+Now that the file has been joined and the metadata and texts are combined, it is time to start pre-processing the data. The first thing to do here is tokenize the data. First, the unnest_tokens() function will be used to separate the words and strip away punctuation.
 
+----------------------------------------------------
+
+```{r}
+
+
+OWS_Benjamin_full.unnest.single <- OWS_Benjamin_full %>%
+  unnest_tokens(word, text)
+OWS_Benjamin_full.stop.single <- OWS_Benjamin_full.unnest.single %>%
+  anti_join(stop_words)
+
+OWS_Benjamin_full.unnest.sentences <- OWS_Benjamin_full %>%
+  unnest_tokens(word, text, token = "sentences")
+
+OWS_Benjamin_full.unnest.bigrams <- OWS_Benjamin_full %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+OWS_Benjamin_full.stop.bigrams <- OWS_Benjamin_full.unnest.bigrams %>%
+  separate(bigram, into = c("first","second"), sep = " ", remove = FALSE) %>%
+  anti_join(stop_words, by = c("first" = "word")) %>%
+  anti_join(stop_words, by = c("second" = "word")) %>%
+  filter(str_detect(first, "[a-z]") &
+         str_detect(second, "[a-z]"))
+
+OWS_Benjamin_full.unnest.trigrams <- OWS_Benjamin_full %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+OWS_Benjamin_full.stop.trigrams <- OWS_Benjamin_full.unnest.trigrams %>%
+  separate(trigram, into = c("first","second", "third"), sep = " ", remove = FALSE) %>%
+  anti_join(stop_words, by = c("first" = "word")) %>%
+  anti_join(stop_words, by = c("second" = "word")) %>%
+  anti_join(stop_words, by = c("second" = "word")) %>%
+  filter(str_detect(first, "[a-z]") &
+         str_detect(second, "[a-z]"))
+
+OWS_Benjamin_full.stem.single <- OWS_Benjamin_full.stop.single %>%
+        mutate(word_stem = wordStem(word))
+
+```
+Now pre-processing for this portion of the project is complete. The dataframes listed in the table below were produced by the above code and can be used for analysis:
+
+Dataframe Title  | Dataframe Contents | Notes
+------------- | ------------- | -------------
+OWS_Benjamin_full.unnest.single  | 37925 obs. of 14 var. | Baseline, single word tokenized dataframe without stopword removal.
+OWS_Benjamin_full.unnest.sentence  | 2193 obs. of 14 var. | Sentences separated for syntactical analysis without stopword removal. 
+OWS_Benjamin.unnest.bigrams | 37863 obs. of 14 var. | Bigrams without stopwords removed
+OWS_Benjamin.unnest.trigrams | 37801 obs. of 14 var. | Trigrams without stopwords removed
+OWS_Benjamin_full.stop.single | 15498 obs. of 14 var. | Baseline, single word tokenized dataframe with stopwords removed.
+OWS_Benjamin.stop.bigrams | 4997 obs. of 16 var. | Bigrams with stopwords removed.
+OWS_Benjamin.stop.trigrams | 4980 obs. of 17 var. | Trigrams with stopwords removed.
+OWS_Benjamin.stem.single | 15498 obs. of 15 var. | A word_stem column is added to the ...stop.single frame |
+Reference Style Links and Images
+
+Keeping the dataframes organized as allows cross-referencing and comparisons of the different versions of the same data. This way, if new questions arise as the work is progressing, each of these dataframes could be potential resources that can answer questions other versions may not be able to.
+
+With these eight dataframes pre-processed, the discussion can inch on closer to the actual analysis of the text, but before getting there, an explanation of the techniques being applied to *One-Way Street* is in order.
+
+### Techniques for Analysis: Topic Modelling
+
+For this project, the various passages from *One-Way Street*, as they have been digitzed and formatted in the previous section, will be analyzed using basic counting, term frequency, Term Frequency-Inverse Document Frequency, and Topic Modeling. The ways in which these techniques are applied are detailed individually in the following sections.
+
+#### Basic Counting
+ 
+While the term *basic counting* may suggest something simplistic, the counting of items within different variables of the dataframes will give some good fundamental data that will be useful in not only structuring an argument for an interpretation of the text using quantitative data but also analyzing the structure and formal components of the language in the texts. By classifying the various forms that Benjamin uses for his aphoristic passages in *One-Way Street*, it becomes easier to assess the work aesthetically while being able ot clearly visualize the evidence. Each of the following counts will be added to a dataframe titled OBW_Benjamin_full.count variable., and then some visualizations will be created using the data.
+
+The first and most obvious count to make is to count the words in eash separate passage. To do this the following code must be run:
+
+```{r}
+#OBW_Benjamin_full.count <- OBW_Benjamin_full %>%
+ # mutate(words_count <- words %>%
+ # group_by(source2, word) %>%
+ # count()
+
+  
+OWS_Benjamin_full.unnest.single.groupcount <- OWS_Benjamin_full.unnest.single %>%
+  filter(Title != "Complete Cycle") %>%
+  group_by(Title, word) %>%
+  count()
+  
+OWS_Benjamin_full.unnest.single.groupsum <- OWS_Benjamin_full.unnest.single.groupcount %>%
+  group_by(Title) %>% 
+  summarise(sum_title=sum(n), .groups = 'drop') %>%
+  arrange(sum_title)
+  
+
+```
+
+Now that there is a wordcount for each text stored in this variable, and it can be used in reference to any other questions later on. This data also works to help chart the number of passages that fall within certain wordcounts, meaning we can see how many shorter passages there are in relation to the other passages to get some broad level insight into the structure of *One-Way Street*.
+
+First, the data needs to be grouped into how many titles fall within each range, for this project, we will look at consecutive ranges of fifty words. So, we will need a number for 1-50, 51-150 words, 151-300 words, 301-500 words, 501-1000, words, 1001-2000 words, 2001 words or more. These seven categories will function to make a quickly legible visualization that will put the the quality of length in *One-Way Streets* on display as a key structural element.The ranges above were chosen to represent a few different types of writing. The table below details:
+
+Wordcount Range  | Type of Writing
+------------- | -------------
+0-50 | very short passsage or paragraph
+51-150  | average size of a paragraph 
+151-300 | lengthy paragraph or multiple short paragraphs
+301-500 | multiple paragraphs, but shorter than an essay
+510-1000 | short essay
+1001-2000 | essay
+2001+ | longest work
+
+This information will serve as material for a visualization, but also as a key reference point for the rest of the analysis. A clearer picture of the groups within the text become visible, and further interpretation can fall back on this initial, seemingly simplistic data.
+
+Below is the code to organize the data into groups according to range and a bar graph visualization of the presence of each range in the text.
+
+```{r}
+library(ggplot2)
+
+OWS_Benjamin_full.unnest.single.agg.range <- OWS_Benjamin_full.unnest.single.groupsum %>%
+  mutate(WordcountRange = case_when( sum_title > 0 & sum_title < 51 ~ "0001-0050",
+  sum_title > 50 & sum_title < 151 ~ "0051-0150",
+  sum_title > 150 & sum_title < 301 ~ "0151-0300",
+  sum_title > 300 & sum_title < 501 ~ "0301-0500",
+  sum_title > 500 & sum_title < 1001 ~ "0501-1000",
+  sum_title > 1000 & sum_title < 2001 ~ "1001-2000",
+  sum_title > 2000 ~ "2000+"))
+
+OWS_Benjamin_full.length.agg.range <- OWS_Benjamin_full.unnest.single.agg.range %>%
+  group_by(WordcountRange) %>%
+  count(WordcountRange) %>%
+  arrange(WordcountRange)
+  
+  
+OWS_Benjamin_full.length.agg.range
 
 ```
 
 
+Visualize the above data as a bar graph will display how *One-Way Street* is divided in terms of passage length. Here is the code for that:
 
-###Techniques for Analysis: Topic Modelling
+
+```{r}
+OWS_Benjamin_full.length.agg.range.bgraph <- ggplot(data=OWS_Benjamin_full.length.agg.range, aes(x=WordcountRange, y=n, fill = WordcountRange)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label=n), vjust=1.6, color="black",
+            position = position_dodge(0.9), size=3.5) +
+  labs(y= "Number of Texts per Range", x = "Wordcount Ranges")
+  
 
 
+OWS_Benjamin_full.length.agg.range.bgraph +scale_fill_brewer(palette="Dark2")
+```
+
+This graph demonstrates how clearly a sweet spot in terms of length in *One-Way Street* is between 50 and 300 words. In fact, that number accounts for exactly 75% of the total number of passages falling in that range. This suggests that a closer look into any of three main characteristic lengths, the uncharacteristically short less than 50 words group, the characteristic standard 51-300 words group, and the uncharacteristically long 301-2000 words group (the longest work is just over 2000 words). Isolating each of these groups for later comparative analysis may be useful later. 
+
+Delineating the text this way may also be a way to support some of the argument suggesting the the longest passage in *One-Way Street*, "Imperial Panorama," functions somehow as he core or heart of the text. The arguments for this largely rely on the fact that Imperial Panorama was one of few texts written earlier than the 1925-26 window that the rest of the text was written in. Mcfarland, for example says that Imperial Panorama was "the 'original' aphorism in the collection, KAISERPANORAMA," which he perceives the rest of the passages extending from as a sort of "encounter from various directions motifs of space, of dream, of gambling, of rupture and of loss. They demonstrate the earlier tendencies in Benjamin’s thought  that break into expression in the book." McFarland sees this as a model for "Benjamin’s further work, in particular the affinity between Asja Lacis Street and theParisian arcades Benjamin explored for the rest of his life."^7^ This analysis of *One-Way Street* then already finds connections to other theory's of Benjamin's work and shows promise for further development. Perhaps another visualization will strengthen this case.
+
+In addition to length, the metadata also includes a column designating different formats that each passage models. There are 
+
+```{r}
+
+```
 
 
 
@@ -86,6 +225,7 @@ OWS_Benjamin_full
 
 6. This version was first published in 1978 as the first English traslation of the full cycle of writing that made up the original German version, *Einbahnstraße*. Benjamin, Walter. *One-Way Street*.
 
+7. McFarland, "Setting the Stage," 215-16.
 
 
 
