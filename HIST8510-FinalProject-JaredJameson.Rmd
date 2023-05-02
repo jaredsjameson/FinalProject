@@ -56,7 +56,6 @@ OWS_Benjamin_full <- full_join(OWS_Metadata, OWS_texts, by = c("Filename" = "doc
 ```
 ----------------------------------------------------
 
-
 Now that the file has been joined and the metadata and texts are combined, it is time to start pre-processing the data. The first thing to do here is tokenize the data. First, the unnest_tokens() function will be used to separate the words and strip away punctuation.
 
 ----------------------------------------------------
@@ -179,7 +178,7 @@ OWS_Benjamin_full.length.agg.range <- OWS_Benjamin_full.unnest.single.agg.range 
   arrange(WordcountRange)
   
   
-OWS_Benjamin_full.length.agg.range
+head(OWS_Benjamin_full.length.agg.range)
 
 ```
 
@@ -247,7 +246,7 @@ OWS_Benjamin_full.single.termfreq <- OWS_Benjamin_full.stop.single %>%
          term_freq = n/n_tot) %>%
   arrange(desc(term_freq))
 
-OWS_Benjamin_full.single.termfreq
+head(OWS_Benjamin_full.single.termfreq)
 ```
 Peaking at the data, the term with the highest frequency is "wake," with a term frequency of 0.33. This is especially compelling considering that this term derives from the passage titled "Closed for Alterations," which is about a hotel room being "closed for alterations" after its tenant committed suicide by gunshot to the head.^9^ This particular passage has always been a memorable one for readers also because of Benjamin's own suicide. This early echo of the author's impending doom certainly has a weight to it already, so perhaps it should not be surprising that it's use of "wake" is the highest listed, although it is tied with three other terms: "conception," "conquer," and  "convince." These terms all share the 0.33 term frequency rating. All three terms are from the passage "For Men,"^10^ and they are all related in certain ways to the term "wake," at least from a standpoint of common association. For instance to wake is regain consciousness after sleep, to become aware again, and a conception not only marks the arriving at the formation of a concept, but also a birth, into the new day. The word *conquer* is commonly associated with waking in relation to phrases like "seize the day," "early bird catches the worm," "Up and at 'em," etc. And to *convince* is to *wake* someone up to a point-of-view or belief. Is this the type of "waking" that emanates from Benjamin's writing here? 
 
@@ -259,7 +258,7 @@ For now, the data will be filtered for terms that occur at least twice.
 
 OWS_Benjamin_full.single.termfreq.filtered <- OWS_Benjamin_full.single.termfreq %>%
   filter(n > 1)
-OWS_Benjamin_full.single.termfreq.filtered
+head(OWS_Benjamin_full.single.termfreq.filtered)
 
 ```
 
@@ -276,11 +275,11 @@ OWS_Benjamin_full.single.termfreq.filtered.lengroup <- OWS_Benjamin_full.single.
   filter(n_tot > 30 & n_tot < 225)
 
 
-OWS_Benjamin_full.single.termfreq.filtered.lengroup
+head(OWS_Benjamin_full.single.termfreq.filtered.lengroup)
 
 ```
 
-Both the top terms here derive from the same passage, interestingly, one titled "No. 13." Again, strangely enough, the terms *books* and *harlots* showing the highest term frequencies among passages in this wordcount range, is not surprising, as Benjamin's writing, including that of *One-Way Street*, often references his fondness for both collecting books and visiting prostitutes. From an interpretive point of view, the term *harlot*, though, in relation to the term *books* oddly clashes with the epigraph from the book's opening dedication to his romantic interest Asja Lacis. The question arises as to why mention *harlots* so frequently, so strongly here in a book supposedly inspired by her. It is also interesting that these high occurrence and high frequency terms show up here, in "No. 13," as the number 13 reverberates through many of the other pieces in *One-Way Street*, and Benjamin is known to have studied the cabala which has sacred numerological components to its teachings. 
+Both the top terms here derive from the same passage, interestingly, one titled "No. 13." Again, strangely enough, the terms *books* and *harlots* showing the highest term frequencies among passages in this wordcount range, is not surprising, as Benjamin's writing, including that of *One-Way Street*, often references his fondness for both collecting books and visiting prostitutes. From an interpretive point of view, the term *harlot*, though, in relation to the term *books* oddly clashes with the epigraph from the book's opening dedication to his romantic interest Asja Lacis. The question arises as to why mention *harlots* so frequently, so strongly here in a book supposedly inspired by her. It is also interesting that these high occurrence and high frequency terms show up here, in "No. 13," as the number 13 reverberates through many of the other pieces in *One-Way Street*, and Benjamin is known to have studied the Kabbalah which has sacred numerological components to its teachings. 
 
 Another interesting outcome from the term frequency analysis is the third term on the list *dream*. Here, there could be connections drawn toward *wake* from the earlier, shallower term frequency analysis, which could create further support for an interpretation of the importance of dreams and the liminal ambiguities between sleeping and waking states that seem of central importance here. In this case, the term derives from the second passage in the book, "Breakfast Room."^11^ Benjamin's use of *dream* here at such a high frequency is effective, as it resonates throughout the reading from the very beginning, serving to almost prime reader's attunement to the dreamlike qualities spread throughout the work. 
 
@@ -294,7 +293,7 @@ OWS_Benjamin_full.single.termfreq.filtered.parlengroup <- OWS_Benjamin_full.sing
   filter(Format == "single paragraph") %>% 
   arrange(desc(term_freq))
 
-OWS_Benjamin_full.single.termfreq.filtered.parlengroup
+head(OWS_Benjamin_full.single.termfreq.filtered.parlengroup)
 
 ```
 This dataframe shows which terms have the highest frequency for all passages in *One-Way Street* that are of the commonest length of more than 50 and less than 300 words and in the commonest format, the single paragraph. Here, *dream* takes the number one spot with the highest frequency of approximately 0.08. At this length, the intensisty of the frequencies are drastically lower than they were in the previous examples. This exemplifies the relationship of term frequency to the length of a passage quite nicely, where the shorter a passage is the more weightier each word in it becomes. This seems obvious but becomes interesting when critically examining Benjamin's aesthetic choices. In that case, the argument could be made that by choosing such a short medium in the single paragraph, Benjamin not only lends each of his words a more powerful, more resonant frequency, although only at a short burst. In addition to this, by sandwiching occasional longer passages between these sporadic bursts of paragraphs, Benjamin lends those longer passages a certain sense of gravitas, a seeming immensity, to these passages. These longer works are only "longer" in the context of the other writings in *One-Way Street*, outside of this text, these passages are relatively short themselves, with the absolute longest of them being, as earlier mentioned, only around 2,000 words. Compared to even a "short" novel, this is still pretty short, but in Benjamin's little book, these passages stand out like giants and demand attention more than they ortherwise would. 
@@ -305,7 +304,6 @@ Outside of this formal analysis, though, this list does provide interesting insi
 ```{r}
 OWS_Benjamin_full.single.termfreq.filtered.stackedgroups1 <- data.frame(append(OWS_Benjamin_full.single.termfreq.filtered, c(StackedClass="All Formats"), after = 2))
 
-OWS_Benjamin_full.single.termfreq.filtered.stackedgroups1
 
 OWS_Benjamin_full.single.termfreq.filtered.stackedgroups2 <- data.frame(append(OWS_Benjamin_full.single.termfreq.filtered.parlengroup, c(StackedClass="single par."), after = 2))
 
@@ -325,10 +323,10 @@ OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready3 <-
 
 OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole <-  rbind(OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready1, OWS_Benjamin_full.single.termfreq.filtered.stackedgroups.stackedready3)
 
-OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole
+
 
 OWS_Benjamin_full.single.termfreq.stackedbgraph <- 
-  ggplot(data = OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole, aes(x = StackedClass, y = term_freq, fill = word)) +
+  ggplot(data = OWS_Benjamin_full.single.termfreq.filtered.stackedreadywhole, aes(x = StackedClass, y = term_freq, fill = word, color = "black")) +
   geom_bar(stat="identity") 
   
  
@@ -344,10 +342,177 @@ This visualization highlights clearly the differing levels of frequency as works
 
 ### TF-IDF 
 
-The term frequency above yielded some interesting results, but still, there is more in terms of frequency that we can learn about *One-Way Street*. To go further, the technique of Term Frequency - Inverse Document Frequency will be explored as a tool for analysis. Ph.D and author Faith Karabiber defines term frequency as "a widely used statistical method in natural language processing and information retrieval. It measures how important a term is within a document relative to a collection of documents (i.e., relative to a corpus)." ^12^
+The term frequency above yielded some interesting results, but still, there is more in terms of frequency that we can learn about *One-Way Street*. To go further, the technique of Term Frequency - Inverse Document Frequency will be explored as a tool for analysis. Ph.D and author Faith Karabiber defines term frequency as "a widely used statistical method in natural language processing and information retrieval. It measures how important a term is within a document relative to a collection of documents (i.e., relative to a corpus)." ^12^ This techniques should help to verify or invalidate the previous findings. The below codes begins that TF-IDF analysis of *One-Way Street*.
+
+```{r}
+OWS_Benjamin_full.stop.single.tdidf <- OWS_Benjamin_full.stop.single %>%
+  count(Title, Format, word, sort = TRUE) %>%  
+  bind_tf_idf(word, Title, n) %>%
+arrange(desc(tf_idf))
+
+
+head(OWS_Benjamin_full.stop.single.tdidf) 
+```
+
+Immediately, the changes in the ratings of the word relevances are apparent. In the earlier term frequency analysis the first four words, *wake*, *conception*, *conquer*, and *convince* are all still in place, although the order of  these words in the TD-IDF analysis has changed. *Conception*, *conquer*, and *convince*, though, in the TD-IDF have different frequencies, whereas in the earlier analysis they were tied. This offers more dimension and support to that earlier analysis as it helps differentiate between of these three important terms. The consistent presence of wake here helps support the earlier arguments arrived at initially and adds a bit of nuance to the position. However, not every change here supports initial thoughts on the earlier term frequency analysis results.
+
+The fifth spot on the list of the original term frequency analysis was *street*, which in the TD-IDF analysis here, has been replaced by *knowing*. *Knowing* here moves against earlier interpretations of *street*'s relationship to *wake*, but it suggests interesting connections on its own. However, it is interesting that street is missing here, and following that path might help reinforce the now-in-doubt earlier interpretation. Drilling down with the same filters from the earlier analysis will give us more data to compare. 
+
+```{r}
+OWS_Benjamin_full.stop.single.tdidf.filtered <- OWS_Benjamin_full.stop.single.tdidf %>%
+  filter (n > 1) %>%
+arrange(desc(tf_idf))
+
+head(OWS_Benjamin_full.stop.single.tdidf.filtered)
+```
+
+Oddly enough, when filtering the data to account for only words that are used more than once, *street* retakes its place on the list. Perhaps the earlier interpretation wasn't far off after all, and those first TD-IDF results 
 
 
 
+```{r}
+
+
+OWS_Benjamin_full.tdidf.filtered.par <- OWS_Benjamin_full.stop.single.tdidf.filtered %>%
+  filter(Format == "single paragraph") %>%
+arrange(desc(tf_idf))
+
+head(OWS_Benjamin_full.tdidf.filtered.par)
+```
+Here, filtering to only account for the single paragraph format passages changes the ranings yet again. *Wake* seems unshakable from the top, but *street* is now replaced with *passed*. At this point, the R console that processed this data begins to look like a Ouija board. How? By bringing these four words to the surface of *One-Way Street*--*wake*, *street*, *knowing*, and *passed*, with *knowing* and *passed* both being the terms that interchanged with *street*'s rank in the frames--it's as if the book speaks, telling us that "knowing streets wakes what passed through them before through the perception of what was left behind. This is precisely the contradictory, reflexive type of language that Benjamin is often admired for, and it is striking how the analysis becomes both deconstructive and generative.  
+
+
+### Co-Occurence
+
+Co-Occurence analysis could help solve the problem. See the code below for that:
+
+```{r}
+library(widyr)
+
+OWS_Benjamin_full.wordpairs <- OWS_Benjamin_full %>% 
+  mutate(passage_end = word(text, -5000, end = -1)) %>% # extract last 100 words
+unnest_tokens(word, passage_end) %>% # tokenize
+filter(!word %in% stop_words$word) %>% # remove stopwords
+pairwise_count(word, Title, sort = TRUE, upper = FALSE)
+
+
+head(OWS_Benjamin_full.wordpairs)
+
+```
+
+Immediately, one thing that sticks out here is the term *life*, which was not prominent in our other frequency ratings, but here it shows up in the top four wordpair occurrences. As interesting as this is, it will be more interesting to filter this list to look for occurences of street and the words it pairs with to help answer the earlier arrived at interpretive questions. 
+
+
+```{r}
+OWS_Benjamin_full.wordpairs.streetfiltered <- OWS_Benjamin_full.wordpairs %>% 
+  filter(item1 == "street" | item2 == "street" )
+
+OWS_Benjamin_full.wordpairs.streetfiltered3s <- OWS_Benjamin_full.wordpairs.streetfiltered %>%
+  filter(n == 3)
+
+OWS_Benjamin_full.wordpairs.streetfiltered3s
+
+```
+
+Thats 1920 words paired with street. Visualizing this data as a network graph might bear interesting results. The below network graph shows all co-occurences that take place with street at least 3 times, which was the most that any pair occurred.  
+
+```{r}
+library(igraph)
+library(ggraph)
+
+OWS_Benjamin_full.wordpairs.streetfiltered.netgraph <- OWS_Benjamin_full.wordpairs.streetfiltered3s %>% 
+   graph_from_data_frame() %>% #convert to graph
+ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
+geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour =
+"orange") + geom_node_point(size = 5) + 
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+   theme_void()
+ 
+ OWS_Benjamin_full.wordpairs.streetfiltered.netgraph
+```
+These are compelling associations, but I do not see much to support our interpretation about the term *street*'s relationship to the term *wake*. Perhaps looking at the network for co-occurrences of wake can shed light on this issue. 
+
+```{r}
+OWS_Benjamin_full.wordpairs.wakefiltered <- OWS_Benjamin_full.wordpairs %>% 
+  filter(item1 == "wake" | item2 == "wake" )
+
+OWS_Benjamin_full.wordpairs.wakefiltered2s <- OWS_Benjamin_full.wordpairs.wakefiltered %>%
+ filter(n == 2)
+
+OWS_Benjamin_full.wordpairs.wakefiltered2s
+
+```
+Here, wake doesn't have as many recurring pairs as street, but there are still some interesting reslts with *wake* $ *street* showing up here together at number five on the list. However, the wake-street pair only has one recurrence, which means it isn't necessarily as relevant here as word pairs with more recurrences. Even though this network is small, a visualization still may help put things into perspective.
+
+```{r}
+
+library(igraph)
+
+ OWS_Benjamin_full.wordpairs.wakefiltered.netgraph <- OWS_Benjamin_full.wordpairs.wakefiltered2s %>% 
+   graph_from_data_frame() %>% #convert to graph
+ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
+geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour =
+"purple") + geom_node_point(size = 5) + 
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+   theme_void()
+ 
+ OWS_Benjamin_full.wordpairs.wakefiltered.netgraph
+
+```
+Interestingly enough, that term *life*, noted as the most frequent with co-occurences shows prominently here, almost apart from all the other terms. This will add even more to the interpretation if there are visualizations for those other two words that replaced street in certain frequency counts, as mentioned earlier: *knowing* and *passed*.
+
+```{r}
+OWS_Benjamin_full.wordpairs.knowingfiltered <- OWS_Benjamin_full.wordpairs %>% 
+  filter(item1 == "knowing" | item2 == "knowing" )
+
+#OWS_Benjamin_full.wordpairs.wakefiltered2s <- OWS_Benjamin_full.wordpairs.wakefiltered %>%
+ #filter(n == 2)
+
+OWS_Benjamin_full.wordpairs.knowingfiltered
+
+```
+
+```{r}
+library(igraph)
+
+ OWS_Benjamin_full.wordpairs.knowingfiltered.netgraph <- OWS_Benjamin_full.wordpairs.knowingfiltered %>% 
+   graph_from_data_frame() %>% #convert to graph
+ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
+geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour =
+"gold") + geom_node_point(size = 5) + 
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+   theme_void()
+ 
+ OWS_Benjamin_full.wordpairs.knowingfiltered.netgraph
+```
+Here, the stark nature of the results is actually compelling. *Knowing* has a high term frequency in certain passages, high enough to displace the word *streets* in certain instances from the high frequency lists. The fact that this knowing is paired so nicely with these three things gives some depth to how it might be interpreted in the group: knowing, street, passed, and wake. Lastly, lets look at passed and see what it is most connected to.
+
+```{r}
+OWS_Benjamin_full.wordpairs.passedfiltered <- OWS_Benjamin_full.wordpairs %>% 
+  filter(item1 == "passed" | item2 == "passed" ) %>%
+filter(n == 3 | n ==4)
+
+#OWS_Benjamin_full.wordpairs.wakefiltered2s <- OWS_Benjamin_full.wordpairs.wakefiltered %>%
+ #filter(n == 3 | n ==4)
+
+OWS_Benjamin_full.wordpairs.passedfiltered
+```
+```{r}
+OWS_Benjamin_full.wordpairs.passedfiltered.netgraph <- OWS_Benjamin_full.wordpairs.passedfiltered %>% 
+   graph_from_data_frame() %>% #convert to graph
+ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
+geom_edge_link(aes(edge_alpha = n, edge_width = 5), edge_colour =
+"blue") + geom_node_point(size = 5) + 
+  geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
+   theme_void()
+ 
+ OWS_Benjamin_full.wordpairs.passedfiltered.netgraph
+```
+
+```
+
+
+This visualization brings a new word into the fray *hand* 
 
 ## End Notes
 
