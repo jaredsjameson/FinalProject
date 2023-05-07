@@ -112,7 +112,7 @@ Keeping the dataframes organized as allows cross-referencing and comparisons of 
 
 With these eight dataframes pre-processed, the discussion can inch on closer to the actual analysis of the text, but before getting there, an explanation of the techniques being applied to *One-Way Street* is in order.
 
-### Techniques for Analysis: Topic Modelling
+### Techniques for Analysis: Basic Counting, Term Frequency, TF-IDF Analysis, and Co-Occurrrence
 
 For this project, the various passages from *One-Way Street*, as they have been digitzed and formatted in the previous section, will be analyzed using basic counting, term frequency, Term Frequency-Inverse Document Frequency, and Topic Modeling. The ways in which these techniques are applied are detailed individually in the following sections.
 
@@ -421,15 +421,16 @@ library(igraph)
 library(ggraph)
 
 OWS_Benjamin_full.wordpairs.streetfiltered.netgraph <- OWS_Benjamin_full.wordpairs.streetfiltered3s %>% 
-   graph_from_data_frame() %>% #convert to graph
+   graph_from_data_frame() %>% 
 ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
-geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour =
-"orange") + geom_node_point(size = 5) + 
+geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour ="orange") + 
+  geom_node_point(colour = "purple", size = 5) + 
   geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
    theme_void()
  
  OWS_Benjamin_full.wordpairs.streetfiltered.netgraph
 ```
+
 These are compelling associations, but I do not see much to support our interpretation about the term *street*'s relationship to the term *wake*. Perhaps looking at the network for co-occurrences of wake can shed light on this issue. 
 
 ```{r}
@@ -442,7 +443,9 @@ OWS_Benjamin_full.wordpairs.wakefiltered2s <- OWS_Benjamin_full.wordpairs.wakefi
 OWS_Benjamin_full.wordpairs.wakefiltered2s
 
 ```
+
 Here, wake doesn't have as many recurring pairs as street, but there are still some interesting reslts with *wake* $ *street* showing up here together at number five on the list. However, the wake-street pair only has one recurrence, which means it isn't necessarily as relevant here as word pairs with more recurrences. Even though this network is small, a visualization still may help put things into perspective.
+
 
 ```{r}
 
@@ -452,7 +455,7 @@ library(igraph)
    graph_from_data_frame() %>% #convert to graph
 ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
 geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour =
-"purple") + geom_node_point(size = 5) + 
+"purple") + geom_node_point(colour = "orange", size = 5) + 
   geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
    theme_void()
  
@@ -479,13 +482,17 @@ library(igraph)
    graph_from_data_frame() %>% #convert to graph
 ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
 geom_edge_link(aes(edge_alpha = n, edge_width = n), edge_colour =
-"gold") + geom_node_point(size = 5) + 
+"gold") + geom_node_point(colour = "blue", size = 5) + 
   geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
    theme_void()
  
  OWS_Benjamin_full.wordpairs.knowingfiltered.netgraph
 ```
+
+
 Here, the stark nature of the results is actually compelling. *Knowing* has a high term frequency in certain passages, high enough to displace the word *streets* in certain instances from the high frequency lists. The fact that this knowing is paired so nicely with these three things gives some depth to how it might be interpreted in the group: knowing, street, passed, and wake. Lastly, lets look at passed and see what it is most connected to.
+
+
 
 ```{r}
 OWS_Benjamin_full.wordpairs.passedfiltered <- OWS_Benjamin_full.wordpairs %>% 
@@ -502,7 +509,7 @@ OWS_Benjamin_full.wordpairs.passedfiltered.netgraph <- OWS_Benjamin_full.wordpai
    graph_from_data_frame() %>% #convert to graph
 ggraph(layout = "fr") +  # place nodes according to the force-directed algorithm of Fruchterman and Reingold
 geom_edge_link(aes(edge_alpha = n, edge_width = 5), edge_colour =
-"blue") + geom_node_point(size = 5) + 
+"blue") + geom_node_point(colour = "yellow", size = 5) + 
   geom_node_text(aes(label = name), repel = TRUE, point.padding = unit(0.2, "lines")) +
    theme_void()
  
@@ -512,7 +519,16 @@ geom_edge_link(aes(edge_alpha = n, edge_width = 5), edge_colour =
 ```
 
 
-This visualization brings a new word into the fray *hand* 
+This visualization brings a new word into the fray *hand*, which is very strongly tied to the word passed here. Of course, this is fairly common sensical in that the hand is generally used to pass things, so the association is not surprising at all. But, in the context of *One-Way Street*, it is somewhat compelling in that the act of things changing hands is not something commonly brought up when considering Benjamin's work, but the concept of the *gift* is, which could be related. All in all, these terms seem compelling enought to inspire furether research.
+
+
+## Conclusion
+
+Benjamin's work is characteristically enigmatic and *One-Way Street* is no different. But, with textual analysis techniques and visualizations of his work, new solutions to his prose puzzles become apparent. This work started with a very broad research question: Could the R programming language, quantitative analysis, and data visualization help build new interpretations of Walter Benjamin's unorthodox book *One Way Street*? The answer, unsurprisingly, was a resounding yes, however, the ways in which this analysis was used in this work to derive interpretations, I think, is much different than how these types of datapoints are normally used. Along the way, the broad question this work began with fertilized the ground for more specific questions to pop up along the way. Revising the text this way was like a journey, in fact, to state it quite boldly, a new way of reading. The idea springs to mind that this type of visualization of texts should be built in to electronic books in ways that it currently is not. If it were, though, this kind of  reading, a form of distant but active reading, proides a really rewarding experience in cases where the reader is already familiar with the text he or she is reading and already interested in analyzing the text for some purpose. This is exactly what I think Benjamin himself would like about this type of analysis, as much of his work, including *One-Way Street* was written specifically to shake up the way people read through and think about and interact with a book. In this case, I do think there were interesting insights that I was able to latch onto that I wouldn't have been able to otherwise identify, and providing evidence for those interpretations as well as inspiration for direction to take them in was easy and intuitive. 
+
+Through this reading several interesting things came to light, the most interesting of which being the connections between the term street, one central to the book, to the ideas of dreaming and waking. While dreaming and waking as themes are apparent just throgh reading *One-Way Street* it doesn't seem as prominent when reading as it actually is in the text according to this analysis. In addition, the word passed, being strongly related to both street and wake, is more compelling here than may initially seem, as *The Arcades Project*
+
+
 
 ## End Notes
 
